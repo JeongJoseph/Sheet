@@ -1,0 +1,158 @@
+{% load render_table from django_tables2 %}
+
+
+<!DOCTYPE html>
+<link rel = "stylesheet"  href="{{ STATIC_URL}}django_tables2/themes/paleblue/css/screen.css" />
+<html>
+    <head lang="en">
+        <meta charset="UTF-8">
+        <title>{% block title %}{% endblock %}</title>
+        <link href="/static/css/ui-lightness/jquery-ui-1.10.4.custom.css" rel="stylesheet" />
+        <link href="/static/css/ui.jqgrid.css" rel = "stylesheet">
+
+        <script src="/static/js/jquery-1.7.2.min.js"></script>
+        <script src="/static/js/i18n/grid.locale-kr.js"></script>
+        <script src="/static/js/jquery.jqGrid.min.js"></script>
+
+        {% block external %}{% endblock %}
+
+        <script>
+            var $test = 1
+
+            $(document).ready(function(){
+
+
+                $('#grid').jqGrid({
+
+                    mtype:'get',
+                    colNames: [ 'Column1', 'Column2', 'Column3', 'Column4', 'Column5',
+                                'Column6', 'Column7', 'Column8', 'Column9', 'Column10'],
+                    colModel: [
+                            { name: 'Column1', index: 'Column1', width: 50 ,editable : true},
+                            { name: 'Column2', index: 'Column2', width: 50 ,editable : true},
+                            { name: 'Column3', index: 'Column3', width: 50 ,editable : true},
+                            { name: 'Column4', index: 'Column4', width: 50 ,editable : true},
+                            { name: 'Column5', index: 'Column5', width: 50 ,editable : true},
+                            { name: 'Column6', index: 'Column6', width: 50 ,editable : true},
+                            { name: 'Column7', index: 'Column7', width: 50 ,editable : true},
+                            { name: 'Column8', index: 'Column8', width: 50 ,editable : true},
+                            { name: 'Column9', index: 'Column9', width: 50 ,editable : true},
+                            { name: 'Column10', index: 'Column10', width: 50 ,editable : true}
+                    ],
+                    width : '100%',
+                    height : '100%',
+                    caption:'New Sheet',
+                    pager: '#pgrid',
+                    rowNum : 10,
+                    rowList : [10,20,30,40,50]
+                    });
+                jQuery("#grid").jqGrid('navGrid',"#pgrid",{edit:false,add:false,del:false});
+                jQuery("#grid").jqGrid('inlineNav',"#pgrid");
+//                jQuery('#grid').jqGrid('editRow',id,true);
+
+
+                for(var $i=0; $i<50;$i++){
+                    jQuery("#grid").jqGrid('addRow', {
+                        rowID: 'te'+$i,          //중복되지 않게 rowid설정
+                        initdata: {},
+                        position: "last",           //first, last
+                        useDefValues: false,
+                        useFormatter: false,
+                        addRowParams: {extraparam: {}},
+                        editable : true
+                    });
+                }
+
+
+
+
+
+
+
+               $('.test').click(function () {
+                   $('body').append('<table id="grid'+$test+'" border="1"></table>');
+
+                   $('#grid'+$test).jqGrid({
+
+                    mtype:'get',
+                    colNames: [ 'Column1', 'Column2', 'Column3', 'Column4', 'Column5',
+                                'Column6', 'Column7', 'Column8', 'Column9', 'Column10'],
+                    colModel: [
+                            { name: 'Column1', index: 'Column1', width: 50 },
+                            { name: 'Column2', index: 'Column2', width: 50 },
+                            { name: 'Column3', index: 'Column3', width: 50 },
+                            { name: 'Column4', index: 'Column4', width: 50 },
+                            { name: 'Column5', index: 'Column5', width: 50 },
+                            { name: 'Column6', index: 'Column6', width: 50 },
+                            { name: 'Column7', index: 'Column7', width: 50 },
+                            { name: 'Column8', index: 'Column8', width: 50 },
+                            { name: 'Column9', index: 'Column9', width: 50 },
+                            { name: 'Column10', index: 'Column10', width: 50 }
+                    ],
+                    caption:'New Sheet'
+                    });
+                    $test +=1;
+                });
+
+                $('.test2').click(function () {
+                    jQuery("#grid").jqGrid('addRow', {
+                        rowID: 'Column10',          //중복되지 않게 rowid설정
+                        initdata: {},
+                        position: "last",           //first, last
+                        useDefValues: false,
+                        useFormatter: false,
+                        addRowParams: {extraparam: {}}
+                    });
+
+                });
+
+
+                $("#grid").mousedown(function(e) {
+                    alert(e.which); // 1:좌클릭, 2:휠클릭, 3:우클릭
+                });
+            });
+
+            $(function(){
+                $.contextMenu({
+                    selector: '.context-menu-one',
+                    callback: function(key, options) {
+                        var m = "clicked: " + key;
+                        window.console && console.log(m) || alert(m);
+                    },
+                    items: {
+                        "edit": {name: "Edit", icon: "edit"},
+                        "cut": {name: "Cut", icon: "cut"},
+                        "copy": {name: "Copy", icon: "copy"},
+                        "paste": {name: "Paste", icon: "paste"},
+                        "delete": {name: "Delete", icon: "delete"},
+                        "sep1": "---------",
+                        "quit": {name: "Quit", icon: "quit"}
+                    }
+                });
+
+                $('.context-menu-one').on('click', function(e){
+                    console.log('clicked', this);
+                })
+            });
+
+
+        </script>
+    </head>
+
+
+    <body>
+
+        <table id="grid" border="1"></table>
+        <div id="pgrid"></div>
+        <input type="button" name="추가" value = "추가" class="test" />
+
+        <input type="button" name="행추가" value = "행추가" class="test2" />
+
+
+
+
+        <div class="context-menu-one box menu-1">
+            <strong>right click me</strong>
+        </div>
+    </body>
+</html>
