@@ -55,7 +55,7 @@
             var $container = $("#example");
 
             $container.handsontable({
-               // colHeaders: newcolheaders,
+
                 colHeaders: newcolheaders,
 {#                columns:[#}
 {#                    {   type: 'numeric' },#}
@@ -67,7 +67,7 @@
 {#                    {   type: 'handsontable'   }#}
 {#                ],#}
                 rowHeaders: true,
-                data: emptydata,
+                data : emptydata,
                 minSpareRows: 1,
 //                contextMenu: true,
                 contextMenu: {
@@ -78,9 +78,9 @@
                         },
                     items: {
                       "col_left" : {
-                          name: '왼쪽 열 삽입',
-                          callback : function(){ var check = prompt(); return check; }
-                            },
+                          name: '왼쪽 열 삽입'
+
+                      },
                       "col_right": {name: '오른쪽 열 삽입'},
                       "row_above": {},
                       "row_below": {},
@@ -119,23 +119,50 @@
 
     <script>
 
-    $(document).ready(function(){
+    $(document).ready(function() {
 
         $('.test').click(function () {
+            {#            $('body').append('<div id="example'+$sheetNum+'"></div>');#}
+            {##}
+            {#            var $container = $("#example"+$sheetNum);#}
+            {#            $container.handsontable({#}
+            {#                colHeaders: newcolheaders,#}
+            {#                rowHeaders: true,#}
+            {#                data: emptydata,#}
+            {#                minSpareRows: 1,#}
+            {#                contextMenu: true#}
+            {#              });#}
+            {#             $sheetNum +=1;#}
+            {#        });#}
+            newcolheaders = ["Column 11", "Column 12", "Column 13", "Column 4", "Column 5",
+                         "Column 6", "Column 7", "Column 8", "Column 9", "Column 10"];
+            newcolheaders[8] = "test";
 
-            $('body').append('<div id="example'+$sheetNum+'"></div>');
+            $("#example").handsontable('selectCell',3, 4, 3, 4, true);
 
-            var $container = $("#example"+$sheetNum);
-            $container.handsontable({
-                colHeaders: newcolheaders,
-                rowHeaders: true,
-                data: emptydata,
-                minSpareRows: 1,
-                contextMenu: true
-              });
-             $sheetNum +=1;
+            var selection = $container.handsontable('getSettings').colHeaders;
+            selection[9]="tetete";
+
+            alert(selection);
+
+{#            var row1 = selection.start.row;#}
+{##}
+{#            var col2 = selection.end.col;#}
+{#            var row2 = selection.end.row;#}
+
+
+{#            alert(row1);#}
+{#            alert(col2);#}
+{#            alert(row2);#}
+
+
+            $("#example").handsontable({
+                colHeaders:newcolheaders
+            });
         });
-       });
+    });
+
+
 {#    $('.test2').click(function () {#}
 {#        jQuery("#grid").jqGrid('addRow', {#}
 {#            rowID: 'Column10',          //중복되지 않게 rowid설정#}
@@ -149,13 +176,7 @@
 {#    });#}
 
 
-
-
-
-
     </script>
-test
-    <p>testCheck GO</p>
 
 </body>
 </html>

@@ -263,18 +263,48 @@ Handsontable.Core = function (rootElement, userSettings) {
 
         case "insert_col":
           delta = datamap.createCol(index, amount);
+            console.log(index);
+            console.log(amount);
+            console.log(delta);
+            console.log();
+
+
+
+      //      var selectvalue = $("#example").handsontable('getSelected');
+      //      var colNum = selectvalue[1];
+
+            var check = prompt();
+
+//              user code end
+
+           // alter(this);
+            //  alert(colNum);
+            //  alert(check);
+            //  alert(selection.start.col);
+
+           // var testnum = this.handsontable('getSettings').colHeaders;
+
+            // testnum[9]="tetete";
+
+            //alert(testnum);
 
           if (delta) {
 
             if(Handsontable.helper.isArray(instance.getSettings().colHeaders)){
               var spliceArray = [index, 0];
+              console.log(spliceArray);
               spliceArray.length += delta; //inserts empty (undefined) elements at the end of an array
               Array.prototype.splice.apply(instance.getSettings().colHeaders, spliceArray); //inserts empty (undefined) elements into the colHeader array
+                 console.log(spliceArray.length);
+                 console.log(instance.getSettings().colHeaders);
             }
 
             if (selection.isSelected() && priv.selRange.from.col >= index) {
+
               priv.selRange.from.col = priv.selRange.from.col + delta;
+                console.log(priv.selRange.from.col);
               selection.transformEnd(0, delta); //will call render() internally
+               // console.log(priv.selRange.from.col);
             }
             else {
               selection.refreshBorders(); //it will call render and prepare methods
@@ -8240,7 +8270,27 @@ Handsontable.hooks.register('afterColumnSort');
         'col_left': {
           name: 'Insert column on the left',
           callback: function(key, selection){
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//              user code start
+            var selectvalue = $("#example").handsontable('getSelected');
+            var colNum = selectvalue[1];
+
+           // var check = prompt();
+
+//              user code end
             this.alter("insert_col", selection.start.col);
+
+           // alter(this);
+            //  alert(colNum);
+            //  alert(check);
+            //  alert(selection.start.col);
+
+           // var testnum = this.handsontable('getSettings').colHeaders;
+
+            // testnum[9]="tetete";
+
+            //alert(testnum);
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
           },
           disabled: function () {
             var selected = this.getSelected(),
