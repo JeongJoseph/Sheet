@@ -263,48 +263,26 @@ Handsontable.Core = function (rootElement, userSettings) {
 
         case "insert_col":
           delta = datamap.createCol(index, amount);
-            console.log(index);
-            console.log(amount);
-            console.log(delta);
-            console.log();
 
-
-
-      //      var selectvalue = $("#example").handsontable('getSelected');
-      //      var colNum = selectvalue[1];
-
-            var check = prompt();
-
-//              user code end
-
-           // alter(this);
-            //  alert(colNum);
-            //  alert(check);
-            //  alert(selection.start.col);
-
-           // var testnum = this.handsontable('getSettings').colHeaders;
-
-            // testnum[9]="tetete";
-
-            //alert(testnum);
 
           if (delta) {
 
             if(Handsontable.helper.isArray(instance.getSettings().colHeaders)){
               var spliceArray = [index, 0];
-              console.log(spliceArray);
+
               spliceArray.length += delta; //inserts empty (undefined) elements at the end of an array
               Array.prototype.splice.apply(instance.getSettings().colHeaders, spliceArray); //inserts empty (undefined) elements into the colHeader array
-                 console.log(spliceArray.length);
-                 console.log(instance.getSettings().colHeaders);
+                var newColumnHead = prompt("컬럼의 이름을 입력하세요");
+                instance.getSettings().colHeaders[index] = newColumnHead;
+                console.log(instance.getSettings().colHeaders[index]);
+
             }
 
             if (selection.isSelected() && priv.selRange.from.col >= index) {
 
               priv.selRange.from.col = priv.selRange.from.col + delta;
-                console.log(priv.selRange.from.col);
-              selection.transformEnd(0, delta); //will call render() internally
-               // console.log(priv.selRange.from.col);
+                 selection.transformEnd(0, delta); //will call render() internally
+
             }
             else {
               selection.refreshBorders(); //it will call render and prepare methods
@@ -1422,7 +1400,6 @@ Handsontable.Core = function (rootElement, userSettings) {
 
   function expandType(obj) {
     if (!obj.hasOwnProperty('type')) return; //ignore obj.prototype.type
-
 
     var type, expandedType = {};
 
@@ -4485,6 +4462,9 @@ Handsontable.helper.toString = function (obj) {
    */
   Handsontable.DataMap.prototype.createCol = function (index, amount, createdAutomatically) {
     if (this.instance.dataType === 'object' || this.instance.getSettings().columns) {
+//    console.log(this.instance.getSettings().columns);
+
+//    if (this.instance.dataType === 'object' ) {
       throw new Error("Cannot create new column. When data source in an object, " +
         "you can only have as much columns as defined in first data row, data schema or in the 'columns' setting." +
         "If you want to be able to add new columns, you have to use array datasource.");
@@ -5003,17 +4983,21 @@ Handsontable.helper.toString = function (obj) {
     var INPUT = clonableINPUT.cloneNode(false); //this is faster than createElement
 
     if (value === cellProperties.checkedTemplate || value === Handsontable.helper.stringify(cellProperties.checkedTemplate)) {
+      console.log("1 : "+value);
       INPUT.checked = true;
       TD.appendChild(INPUT);
     }
     else if (value === cellProperties.uncheckedTemplate || value === Handsontable.helper.stringify(cellProperties.uncheckedTemplate)) {
+    console.log("2 : "+value);
       TD.appendChild(INPUT);
     }
-    else if (value === null) { //default value
+    else if (value === null || value == '' || value == undefined) { //default value
+        console.log("3 : "+value);
       INPUT.className += ' noValue';
       TD.appendChild(INPUT);
     }
     else {
+         console.log("4 : "+value);
       Handsontable.Dom.fastInnerText(TD, '#bad value#'); //this is faster than innerHTML. See: https://github.com/handsontable/jquery-handsontable/wiki/JavaScript-&-DOM-performance-tips
     }
 
@@ -8270,27 +8254,7 @@ Handsontable.hooks.register('afterColumnSort');
         'col_left': {
           name: 'Insert column on the left',
           callback: function(key, selection){
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//              user code start
-            var selectvalue = $("#example").handsontable('getSelected');
-            var colNum = selectvalue[1];
-
-           // var check = prompt();
-
-//              user code end
             this.alter("insert_col", selection.start.col);
-
-           // alter(this);
-            //  alert(colNum);
-            //  alert(check);
-            //  alert(selection.start.col);
-
-           // var testnum = this.handsontable('getSettings').colHeaders;
-
-            // testnum[9]="tetete";
-
-            //alert(testnum);
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
           },
           disabled: function () {
             var selected = this.getSelected(),
@@ -8659,7 +8623,7 @@ Handsontable.hooks.register('afterColumnSort');
 		$(menu).handsontable({
       data: ContextMenu.utils.convertItemsToArray(items),
       colHeaders: false,
-      colWidths: [200],
+      colWidths: [300],
       readOnly: true,
       copyPaste: false,
       columns: [

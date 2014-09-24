@@ -11,33 +11,36 @@
   <link data-jsfiddle="common" rel="stylesheet" media="screen" href="/static/css/jquery.handsontable.full.css">
   <link data-jsfiddle="common" rel="stylesheet" media="screen" href="/static/css/samples.css">
 
-
-
-
 </head>
 <script>
      var $sheetNum=1;
-          var data = [
-            ["", "Maserati", "Mazda", "Mercedes", "Mini", "Mitsubishi"],
-            ["2009", 0, 2941, 4303, 354, 5814],
-            ["2010", 5, 2905, 2867, 412, 5284],
-            ["2011", 4, 2517, 4822, 552, 6127],
-            ["2012", 2, 2422, 5399, 776, 4151]
-          ];
-          var emptydata =[
-            [ "", "", "", "", "", "", "", "", "", "" ],
-            [ "", "", "", "", "", "", "", "", "", "" ],
-            [ "", "", "", "", "", "", "", "", "", "" ],
-            [ "", "", "", "", "", "", "", "", "", "" ],
-            [ "", "", "", "", "", "", "", "", "", "" ],
-            [ "", "", "", "", "", "", "", "", "", "" ],
-            [ "", "", "", "", "", "", "", "", "", "" ],
-            [ "", "", "", "", "", "", "", "", "", "" ],
-            [ "", "", "", "", "", "", "", "", "", "" ],
-            [ "", "", "", "", "", "", "", "", "", "" ]
-          ];
-          var newcolheaders = ["Column 1", "Column 2", "Column 3", "Column 4", "Column 5",
-                         "Column 6", "Column 7", "Column 8", "Column 9", "Column 10"];
+     var nowColData = [];
+    var emptydata =[
+    [ "", "", "", "", "", "", "", "", "", "" ],
+    [ "", "", "", "", "", "", "", "", "", "" ],
+    [ "", "", "", "", "", "", "", "", "", "" ],
+    [ "", "", "", "", "", "", "", "", "", "" ],
+    [ "", "", "", "", "", "", "", "", "", "" ],
+    [ "", "", "", "", "", "", "", "", "", "" ],
+    [ "", "", "", "", "", "", "", "", "", "" ],
+    [ "", "", "", "", "", "", "", "", "", "" ],
+    [ "", "", "", "", "", "", "", "", "", "" ],
+    [ "", "", "", "", "", "", "", "", "", "" ]
+    ];
+    var newcolheaders =
+            ["Column 1", "Column 2", "Column 3", "Column 4", "Column 5",
+             "Column 6", "Column 7", "Column 8", "Column 9", "Column 10"];
+    var newColumns =
+           [{data : "Column 1" , type : "text"},
+            {data : "Column 2" , type : "text"},
+            {data : "Column 3" , type : "text"},
+            {data : "Column 4" , type : "text"},
+            {data : "Column 5" , type : "text"},
+            {data : "Column 6" , type : "text"},
+            {data : "Column 7" , type : "text"},
+            {data : "Column 8" , type : "text"},
+            {data : "Column 9" , type : "text"},
+            {data : "Column 10" , type : "text"}]
 </script>
 
 
@@ -47,135 +50,125 @@
         <div class="pad" data-jsfiddle="example">
         <div id="example"></div>
     </div>
-    <input type="button" name="추가" value = "추가" class="test" />
+    <input type="button" name="추가" value = "시트 추가" class="test" />
+{# <input type="button" name="추가" value = "추가" class="test2" />#}
+ <input type="button" name="추가" value = "첫 시트 위치 정보 가져오기" class="test3" />
+         <input type="button" name="추가" value = "첫 행 체크박스로 변경" class="test4" />
 
       <div class="codeLayout">
         <script data-jsfiddle="example">
-
             var $container = $("#example");
-
             $container.handsontable({
-
                 colHeaders: newcolheaders,
-{#                columns:[#}
-{#                    {   type: 'numeric' },#}
-{#                    {   type: 'text'   },#}
-{#                    {   type: 'checkbox', data:"available"   },#}
-{#                    {   type: 'autocomplete' ,#}
-{#                        source: ["yellow", "red", "orange", "green", "blue", "gray", "black", "white", "purple", "lime", "olive", "cyan"],#}
-{#                        strict: false},#}
-{#                    {   type: 'handsontable'   }#}
-{#                ],#}
+                // columns: newColumns,
                 rowHeaders: true,
                 data : emptydata,
                 minSpareRows: 1,
-//                contextMenu: true,
                 contextMenu: {
-                    callback: function (key, options) {
-                          if (key == 'col_left') {
-                              
-                          }
-                        },
                     items: {
-                      "col_left" : {
-                          name: '왼쪽 열 삽입'
-
-                      },
-                      "col_right": {name: '오른쪽 열 삽입'},
+                      "col_left" : { name: '왼쪽 열 삽입' },
+                      "col_right": { name: '오른쪽 열 삽입'},
                       "row_above": {},
                       "row_below": {},
                       "hsep1": "---------",
                       "remove_row": { name: '행을 지웁니다, ok?' },
                       "remove_col": { name: '행을 지웁니다, ok?' },
-
                       "hsep2": "---------",
                       "about": {name: 'About this menu'}
                     }
                 },
-                height : 1000
-
+                height : '100%'
             });
         </script>
       </div>
     </div>
 
     <script type="text/javascript">
-      $('.show-source').click(function (event) {
-        event.preventDefault();
+        $(document).ready(function() {
+            var $hooksList = $('#hooksList');
+            var hooks = Handsontable.hooks.getRegistered();
+            hooks.forEach(function (hook) {
+                var checked = '';
+                if (hook !== 'modifyRowHeight' && hook !== 'modifyRow' && hook !== 'modifyCol' && hook !== 'afterRenderer' && hook !== 'beforeGetCellMeta' && hook !== 'afterGetCellMeta') {
+                    checked = 'checked';
+                }
+                $hooksList.append('<li><label><input type="checkbox" ' + checked + ' id="check_' + hook + '"> ' + hook + '</label></li>');
+                $container[hook] = function () {
+                    log_events(hook, arguments);
+                }
+            });
 
-        $(this).toggleClass('shown');
-        $('pre.javascript').toggle();
-        $('.codeLayout').toggleClass('codeLayoutExpanded');
+            var start = (new Date()).getTime();
+            var i = 0;
+
+            var timer;
+            var example1_events = document.getElementById("example1_events");
+
+            function log_events(event, data) {
+                // if (document.getElementById('check_' + event).checked) { 원본
+
+                if (event == 'afterSelectionEnd') {
+                    var vals = [];
 
 
-      });
-{#      $('.ver').text($('#example').data('handsontable').version);#}
-        $(function () {
-        if (window.location.hostname === 'warpech.github.com') {
-          $('#domainNotice').show();
-        }
-      });
-    </script>
+                    for (var d = 0; d < data.length; d++) {
+                        try {
+                            str = JSON.stringify(data[d]);
+                        }
+                        catch (e) {
+                        }
 
-    <script>
+                        if (str !== void 0) {
+                            if (str.length > 20) {
+                                str = Object.prototype.toString.call(data[d]);
+                            }
+                            if (d < data.length - 1) { // str += ','; }
+                                vals.push(str);
+                            }
+                        }
+                    }
+                    console.log("vals : " + vals);
+                    nowColData = vals;
+                    console.log("nowColData : " + nowColData);
 
-    $(document).ready(function() {
+                }
+
+
+            }
+
+            $('#example').handsontable($container);
+        });
+
 
         $('.test').click(function () {
-            {#            $('body').append('<div id="example'+$sheetNum+'"></div>');#}
-            {##}
-            {#            var $container = $("#example"+$sheetNum);#}
-            {#            $container.handsontable({#}
-            {#                colHeaders: newcolheaders,#}
-            {#                rowHeaders: true,#}
-            {#                data: emptydata,#}
-            {#                minSpareRows: 1,#}
-            {#                contextMenu: true#}
-            {#              });#}
-            {#             $sheetNum +=1;#}
-            {#        });#}
-            newcolheaders = ["Column 11", "Column 12", "Column 13", "Column 4", "Column 5",
-                         "Column 6", "Column 7", "Column 8", "Column 9", "Column 10"];
-            newcolheaders[8] = "test";
+            $('body').append('<div id="example'+$sheetNum+'"></div>');
 
-            $("#example").handsontable('selectCell',3, 4, 3, 4, true);
+            var $container = $("#example"+$sheetNum);
+            $container.handsontable({
+                colHeaders: newcolheaders,
+                rowHeaders: true,
+                data: emptydata,
+                minSpareRows: 1,
+                contextMenu: true
+              });
+             $sheetNum +=1;
+        });
 
-            var selection = $container.handsontable('getSettings').colHeaders;
-            selection[9]="tetete";
+{#        $('.test2').click(function () {#}
+{#            $("#example").handsontable({#}
+{#                columns :[{data : Column 1 , type : "text"}]#}
+{#            });#}
+{#        });#}
+        $('.test3').click(function () {
 
-            alert(selection);
-
-{#            var row1 = selection.start.row;#}
-{##}
-{#            var col2 = selection.end.col;#}
-{#            var row2 = selection.end.row;#}
-
-
-{#            alert(row1);#}
-{#            alert(col2);#}
-{#            alert(row2);#}
-
-
+            alert(nowColData);
+        });
+        $('.test4').click(function () {
+            newColumns[0] = {data: "Column 1", type: "checkbox"};
             $("#example").handsontable({
-                colHeaders:newcolheaders
+                columns: newColumns
             });
         });
-    });
-
-
-{#    $('.test2').click(function () {#}
-{#        jQuery("#grid").jqGrid('addRow', {#}
-{#            rowID: 'Column10',          //중복되지 않게 rowid설정#}
-{#            initdata: {},#}
-{#            position: "last",           //first, last#}
-{#            useDefValues: false,#}
-{#            useFormatter: false,#}
-{#            addRowParams: {extraparam: {}}#}
-{#        });#}
-{##}
-{#    });#}
-
-
     </script>
 
 </body>
